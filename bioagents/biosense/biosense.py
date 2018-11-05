@@ -119,36 +119,21 @@ class BioSense(object):
         """
         return agent.isa(collection, hierarchies)
 
-    def choose_sense_what_member(self, collection_ekb):
+    @staticmethod
+    def choose_sense_what_member(collection):
         """Get members of a collection.
 
         Parameters
         ----------
-        collection_ekb : string
-        XML for an extraction knowledge base (ekb) term for a family or
-        complex (from 'FMPLX' or 'BE')
+        collection : Agent
+            A family or complex Agent
 
         Returns
         -------
         members : list[indra.statements.Agent]
-        List of agents in collection
-
-        Raises
-        ------
-        InvalidCollectionError
-        If collection_ekb does not correspond to a recognized collection
-
-        CollectionNotFamilyOrComplexError
-        collection is not from 'FMPLX' or 'BE'
+            List of agents in collection
         """
-        agents, _ = _process_ekb(collection_ekb)
-        if len(agents) != 1:
-            raise InvalidCollectionError("collection not recognized")
-        term_id, (agent, ont_type, urls) = list(agents.items())[0]
-        members = _get_members(agent)
-        if members is None:
-            raise CollectionNotFamilyOrComplexError("collection not in 'FMPLX'"
-                                                    " or 'BE'")
+        members = _get_members(collection)
         return members
 
     def get_synonyms(self, agent_ekb):

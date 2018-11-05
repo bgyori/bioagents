@@ -68,15 +68,14 @@ class BioSense_Module(Bioagent):
             agent_ekb = content.gets('ekb-term')
             agent = _get_agent(agent_ekb)
         except Exception:
-            msg = make_failure('INVALID_AGENT')
+            return make_failure('INVALID_AGENT')
         try:
             collection_ekb = content.gets('collection')
             collection = _get_agent(collection_ekb)
         except Exception:
-            msg = make_failure('INVALID_COLLECTION')
+            return make_failure('INVALID_COLLECTION')
 
-        is_member = self.bs.choose_sense_is_member(agent_ekb,
-                                                   collection_ekb)
+        is_member = self.bs.choose_sense_is_member(agent, collection)
         msg = KQMLList('SUCCESS')
         msg.set('is-member', 'TRUE' if is_member else 'FALSE')
         return msg
@@ -84,18 +83,16 @@ class BioSense_Module(Bioagent):
     def respond_choose_sense_what_member(self, content):
         """Return response content to choose-sense-what-member request."""
         # Get the collection agent
-        ekb = content.gets('collection')
         try:
-            members = self.bs.choose_sense_what_member(ekb)
-        except InvalidCollectionError:
-            msg = make_failure('INVALID_COLLECTION')
-        except CollectionNotFamilyOrComplexError:
-            msg = make_failure('COLLECTION_NOT_FAMILY_OR_COMPLEX')
-        else:
-            kagents = [get_kagent((m, 'ONT::PROTEIN', _get_urls(m)))
-                       for m in members]
-            msg = KQMLList('SUCCESS')
-            msg.set('members', KQMLList(kagents))
+            ekb = content.gets('collection')
+            collection = _get_agent(ekb)
+        except Exception:
+            return make_failure('INVALID_COLLECTION')
+        members = self.bs.choose_sense_what_member(collection)
+        kagents = [get_kagent((m, 'ONT::PROTEIN', _get_urls(m)))
+                   for m in members]
+        msg = KQMLList('SUCCESS')
+        msg.set('members', KQMLList(kagents))
         return msg
 
     def respond_get_synonyms(self, content):
