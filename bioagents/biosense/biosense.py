@@ -136,33 +136,23 @@ class BioSense(object):
         members = _get_members(collection)
         return members
 
-    def get_synonyms(self, agent_ekb):
-        """ Get synonyms of an agent
+    @staticmethod
+    def get_synonyms(agent):
+        """Get synonyms of an agent
 
         Parameters:
         -----------
-        agent_ekb : string
-        XML for an extraction knowledge base (ekb) term for an agent
+        agent : Agent
+            The agent whose synonyms are to be returned
 
         Returns:
         -------
-        synonyms : list[string]
-        list of synonyms for the agent
-
-        Raises
-        ------
-        InvalidAgentError
-        agent_ekb does not correspond to a recognized agent
+        synonyms : list[str]
+            List of synonyms for the agent
         """
-        try:
-            agent = self._get_agent(agent_ekb)
-        except (TypeError, AttributeError, IndexError):
-            raise InvalidAgentError("agent_ekb not readable by Trips")
-        if agent is None:
-            raise InvalidAgentError("agent not recognized")
         up_id = agent.db_refs.get('UP')
         if not up_id:
-            raise InvalidAgentError("agent not recognized")
+            return []
         synonyms = uniprot_client.get_synonyms(up_id)
         return synonyms
 

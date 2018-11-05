@@ -97,19 +97,19 @@ class BioSense_Module(Bioagent):
 
     def respond_get_synonyms(self, content):
         """Respond to a query looking for synonyms of a protein."""
-        ekb = content.gets('entity')
         try:
-            synonyms = self.bs.get_synonyms(ekb)
-        except InvalidAgentError:
-            msg = self.make_failure('INVALID_AGENT')
-        else:
-            syns_kqml = KQMLList()
-            for s in synonyms:
-                entry = KQMLList()
-                entry.sets(':name', s)
-                syns_kqml.append(entry)
-            msg = KQMLList('SUCCESS')
-            msg.set('synonyms', syns_kqml)
+            ekb = content.gets('entity')
+            agent = _get_agent(ekb)
+        except Exception:
+            return make_failure('INVALID_AGENT')
+        synonyms = self.bs.get_synonyms(agent)
+        syns_kqml = KQMLList()
+        for s in synonyms:
+            entry = KQMLList()
+            entry.sets(':name', s)
+            syns_kqml.append(entry)
+        msg = KQMLList('SUCCESS')
+        msg.set('synonyms', syns_kqml)
         return msg
 
 
