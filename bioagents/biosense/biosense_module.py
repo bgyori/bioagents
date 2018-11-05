@@ -64,21 +64,21 @@ class BioSense_Module(Bioagent):
 
     def respond_choose_sense_is_member(self, content):
         """Return response content to choose-sense-is-member request."""
-        agent_ekb = content.gets('ekb-term')
-        collection_ekb = content.gets('collection')
         try:
-            is_member = self.bs.choose_sense_is_member(agent_ekb,
-                                                       collection_ekb)
-        except InvalidAgentError:
+            agent_ekb = content.gets('ekb-term')
+            agent = _get_agent(agent_ekb)
+        except Exception:
             msg = make_failure('INVALID_AGENT')
-        except InvalidCollectionError:
+        try:
+            collection_ekb = content.gets('collection')
+            collection = _get_agent(collection_ekb)
+        except Exception:
             msg = make_failure('INVALID_COLLECTION')
-        except CollectionNotFamilyOrComplexError:
-            msg = KQMLList('SUCCESS')
-            msg.set('is-member', 'FALSE')
-        else:
-            msg = KQMLList('SUCCESS')
-            msg.set('is-member', 'TRUE' if is_member else 'FALSE')
+
+        is_member = self.bs.choose_sense_is_member(agent_ekb,
+                                                   collection_ekb)
+        msg = KQMLList('SUCCESS')
+        msg.set('is-member', 'TRUE' if is_member else 'FALSE')
         return msg
 
     def respond_choose_sense_what_member(self, content):
@@ -167,6 +167,14 @@ def make_failure(reason):
     msg = KQMLList('FAILURE')
     msg.set('reason', reason)
     return msg
+
+
+def _get_agent(agent_ekb):
+    tp = TripsProcessor(agent_ekb)
+    terms = tp.tree.findall('TERM')
+    term_id = terms[0].attrib['id']
+    agent = tp._get_agent_by_id(term_id, None)
+    return agent
 
 
 if __name__ == "__main__":

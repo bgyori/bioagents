@@ -57,7 +57,7 @@ class BioSense(object):
         Parameters
         ----------
         agent_ekb : string
-        XML for an extraction knowledge base (ekb) term
+            XML for an extraction knowledge base (ekb) term
         category : string
         name of a category. one of 'kinase', 'kinase activity', 'enzyme',
         'transcription factor', 'phosphatase'.
@@ -101,39 +101,23 @@ class BioSense(object):
             raise UnknownCategoryError("category not recognized")
         return output
 
-    def choose_sense_is_member(self, agent_ekb, collection_ekb):
+    @staticmethod
+    def choose_sense_is_member(agent, collection):
         """Determine if an agent is a member of a collection
 
         Parameters
         ----------
-        agent_ekb : string
-        XML for an extraction knowledge base (ekb) term.
-        collection_ekb : string
-        XML for the ekb term for a collection method tests for membership
+        agent : Agent
+            Agent to check for membership
+        collection : Agent
+            Agent representing a family or complex
 
         Returns
         -------
-        bool: True is agent is a member of the collection
-
-        Raises
-        ------
-        InvalidAgentError
-        If agent_ekb does not correspond to a recognized agent
-
-        InvalidCollectionError
-        If collection_ekb does not correspond to a recognized category
+        bool
+            True if agent is a member of the collection
         """
-        agents, _ = _process_ekb(agent_ekb)
-        if len(agents) != 1:
-            raise InvalidAgentError("agent not recognized")
-        member_agent = list(agents.values())[0][0]
-        agents, _ = _process_ekb(collection_ekb)
-        if len(agents) != 1:
-            raise InvalidCollectionError("collection not recognized")
-        agent, ont_type, _ = list(agents.values())[0]
-        if ont_type != 'ONT::PROTEIN-FAMILY':
-            raise CollectionNotFamilyOrComplexError
-        return member_agent.isa(agent, hierarchies)
+        return agent.isa(collection, hierarchies)
 
     def choose_sense_what_member(self, collection_ekb):
         """Get members of a collection.
