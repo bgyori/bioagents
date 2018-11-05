@@ -51,38 +51,26 @@ class BioSense(object):
             raise InvalidAgentError
         return agents, ambiguities
 
-    def choose_sense_category(self, agent_ekb, category):
+    def choose_sense_category(self, agent, category):
         """Determine if an agent belongs to a particular category
 
         Parameters
         ----------
-        agent_ekb : string
-            XML for an extraction knowledge base (ekb) term
-        category : string
-        name of a category. one of 'kinase', 'kinase activity', 'enzyme',
-        'transcription factor', 'phosphatase'.
+        agent : Agent
+            The Agent
+        category : str
+            name of a category. one of 'kinase', 'kinase activity', 'enzyme',
+            'transcription factor', 'phosphatase'.
 
         Returns
         -------
-        bool: True if agent is a member of category False otherwise
-
-        Raises
-        ------
-        InvalidAgentError
-        If agent_ekb does not correspond to a recognized agent
-
-        UnknownCategoryError
-        -------------------
-        If category is not from recognized list
+        bool
+            True if agent is a member of category False otherwise
         """
-        agents, _ = _process_ekb(agent_ekb)
-        if len(agents) != 1:
-            raise InvalidAgentError("agent not recognized")
-        agent = list(agents.values())[0][0]
-        logger.info("Checking {} for category {}".format(agent, category))
+        logger.info("Checking %s for category %s" % (agent, category))
         reg_cat = category.lower().replace('-', ' ')
         reg_cat = reg_cat.replace('W::', '').replace('w::', '')
-        logger.info("Regularized category to \"{}\".".format(reg_cat))
+        logger.info("Regularized category to %s" % reg_cat)
         if reg_cat in ['kinase', 'kinase activity']:
             output = agent.name in self._kinase_list
         elif reg_cat == 'transcription factor':
@@ -93,12 +81,8 @@ class BioSense(object):
             output = (agent.name in self._phosphatase_list or
                       agent.name in self._kinase_list)
         else:
-            logger.info("Regularized category \"{}\" not recognized: options "
-                        "are {}.".format(reg_cat,
-                                         ['kinase', 'kinase activity',
-                                          'enzyme', 'transcription factor',
-                                          'phosphatase']))
-            raise UnknownCategoryError("category not recognized")
+            logger.info("Regularized category %s not recognized: %s" % reg_cat)
+            return None
         return output
 
     @staticmethod

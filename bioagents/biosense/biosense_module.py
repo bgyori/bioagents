@@ -49,17 +49,13 @@ class BioSense_Module(Bioagent):
     def respond_choose_sense_category(self, content):
         """Return response content to choose-sense-category request."""
         ekb = content.gets('ekb-term')
+        agent = _get_agent(ekb)
         category = content.gets('category')
-        try:
-            in_category = self.bs.choose_sense_category(ekb, category)
-        except InvalidAgentError:
-            msg = make_failure('INVALID_AGENT')
-        except UnknownCategoryError:
-            msg = make_failure('UNKNOWN_CATEGORY')
-        else:
-            msg = KQMLList('SUCCESS')
-            msg.set('in-category',
-                    'TRUE' if in_category else 'FALSE')
+        in_category = self.bs.choose_sense_category(agent, category)
+        if in_category is None:
+            return make_failure('UNKNOWN_CATEGORY')
+        msg = KQMLList('SUCCESS')
+        msg.set('in-category', 'TRUE' if in_category else 'FALSE')
         return msg
 
     def respond_choose_sense_is_member(self, content):
