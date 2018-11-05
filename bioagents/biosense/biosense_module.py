@@ -1,6 +1,7 @@
 import sys
 import logging
 import indra
+from indra.sources.trips.processor import TripsProcessor
 from .biosense import BioSense, _get_urls
 from .biosense import InvalidAgentError, UnknownCategoryError
 from .biosense import InvalidCollectionError, CollectionNotFamilyOrComplexError
@@ -34,7 +35,7 @@ class BioSense_Module(Bioagent):
         try:
             agents, ambiguities = self.bs.choose_sense(ekb)
         except InvalidAgentError:
-            logger.info("agent not recognized:\n{}\n".format(ekb))
+            logger.info("agent not recognized:\n%s\n" % ekb)
         else:
             kagents = []
             for term_id, agent_tuple in agents.items():

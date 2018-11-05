@@ -81,7 +81,7 @@ class BioSense(object):
             output = (agent.name in self._phosphatase_list or
                       agent.name in self._kinase_list)
         else:
-            logger.info("Regularized category %s not recognized: %s" % reg_cat)
+            logger.info("Regularized category is not recognized: %s" % reg_cat)
             return None
         return output
 
