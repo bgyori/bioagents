@@ -9,8 +9,8 @@ services:
 before_install:
   - sudo apt-get update
   - pip install awscli
-  - mkdir -p $HOME/.indra/bio_ontology/1.1
-  - aws s3 cp s3://bigmech/travis/mock_ontology.pkl $HOME/.indra/bio_ontology/1.1/bio_ontology.pkl --no-sign-request  --source-region us-east-1
+  - mkdir -p $HOME/.indra/bio_ontology/1.2
+  - aws s3 cp s3://bigmech/travis/mock_ontology.pkl $HOME/.indra/bio_ontology/1.2/bio_ontology.pkl --no-sign-request  --source-region us-east-1
 install:
   - pip install numpy scipy sympy cython==0.23.5 nose lxml matplotlib pandas kappy==4.0.0 boto3 nose-timer
   # PySB and dependencies
@@ -22,7 +22,7 @@ install:
   # PyKQML
   - pip install git+https://github.com/bgyori/pykqml.git
   # INDRA
-  - pip install git+https://github.com/sorgerlab/indra.git
+  - pip install git+https://github.com/dianakolusheva/indra.git@open_search
   # Dependencies of Bioagents not covered by previous installs
   - sudo apt-get install graphviz
   - pip install pygraphviz ndex2==1.2.0.58
